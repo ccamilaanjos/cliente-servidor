@@ -10,12 +10,16 @@ import javax.swing.JScrollBar;
 import javax.swing.JTextArea;
 import java.awt.Color;
 import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class Janela {
 
 	private JFrame frame;
 	private JTextField txtNome;
 	private JTextField txtIP;
+	private JTextField txtMensagem;
 
 	/**
 	 * Launch the application.
@@ -45,7 +49,7 @@ public class Janela {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
+		frame.setBounds(100, 100, 450, 508);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
@@ -53,26 +57,57 @@ public class Janela {
 		lbNome.setBounds(25, 41, 45, 13);
 		frame.getContentPane().add(lbNome);
 		
-		JLabel lbIP = new JLabel("IP:");
-		lbIP.setBounds(25, 123, 45, 13);
+		JLabel lbIP = new JLabel("IP (server):");
+		lbIP.setBounds(25, 84, 68, 13);
 		frame.getContentPane().add(lbIP);
 		
 		txtNome = new JTextField();
-		txtNome.setBounds(80, 38, 96, 19);
+		txtNome.setBounds(103, 37, 96, 19);
 		frame.getContentPane().add(txtNome);
 		txtNome.setColumns(10);
 		
 		txtIP = new JTextField();
-		txtIP.setBounds(80, 120, 96, 19);
+		txtIP.setBounds(103, 80, 96, 19);
 		frame.getContentPane().add(txtIP);
 		txtIP.setColumns(10);
 		
-		JButton btEnviar = new JButton("Enviar");
-		btEnviar.setBounds(303, 80, 85, 21);
-		frame.getContentPane().add(btEnviar);
+		JButton btLogin = new JButton("Login");
+		btLogin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btLogin.setBounds(311, 55, 85, 21);
+		frame.getContentPane().add(btLogin);
 		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(352, 189, 2, 2);
+		scrollPane.setBounds(52, 338, 332, 93);
 		frame.getContentPane().add(scrollPane);
+		
+		JTextPane txtChat = new JTextPane();
+		txtChat.setText("Criado por:\r\nCamila\r\nLuan\r\nYuri");
+		txtChat.setBackground(new Color(255, 255, 255));
+		txtChat.setEditable(false);
+		scrollPane.setViewportView(txtChat);
+		
+		txtMensagem = new JTextField();
+		txtMensagem.setColumns(10);
+		txtMensagem.setBounds(52, 166, 332, 80);
+		frame.getContentPane().add(txtMensagem);
+		
+		JLabel lbEnviarMensagem = new JLabel("Digite sua mensagem:");
+		lbEnviarMensagem.setBounds(52, 141, 174, 14);
+		frame.getContentPane().add(lbEnviarMensagem);
+		
+		JButton btnEnviarMensagem = new JButton("Enviar mensagem");
+		btnEnviarMensagem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnEnviarMensagem.setBounds(148, 257, 146, 35);
+		frame.getContentPane().add(btnEnviarMensagem);
+		
+		JLabel lbChat = new JLabel("Whatsapp");
+		lbChat.setBounds(52, 313, 73, 14);
+		frame.getContentPane().add(lbChat);
 	}
 }

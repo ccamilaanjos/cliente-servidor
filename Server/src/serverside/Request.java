@@ -3,55 +3,54 @@ package serverside;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class Request implements Runnable{
 	private Socket client;
+	private static int CLIENT_PORT = 3001;
 	
 	Request(Socket client){
 		this.client = client;
 	}
 	
-	public void readMessage() throws IOException {
-		System.out.println("Read - Server");
+	private String getClientMessage() throws IOException {
+//		System.out.println("Read - Server");
 		
-		Scanner scanner;
-		scanner = new Scanner(this.client.getInputStream());
+		Scanner scanner = new Scanner(this.client.getInputStream());
+		String messageFromClient = "";
 		
-		String messageFromClient = scanner.nextLine();
-		System.out.println("Passou do scanner 2");
-		System.out.println(messageFromClient);
-//		this.sendMessage();
-		//this.client.getInetAddress();
+		while(scanner.hasNextLine()) {
+			messageFromClient += scanner.nextLine();
+		}
+		
+		return messageFromClient;
 	}
-	
-//	public void sendMessage() throws IOException {
-//		System.out.println("Write - server");
-//		PrintWriter writer;
-//		writer = new PrintWriter(this.client.getOutputStream(), true);
-//		
-//		String messageFromServer = "Message received successfully";
-//		writer.println(messageFromServer);
-//	}
-	
-	public void resendMessageToAllClients() throws IOException {
+		
+	private void resendMessageToAllClients() throws IOException {
 		PrintWriter writer;
 		Socket toSendMessage;
+		String message = getClientMessage();
 		
 		for (String ip : ServerCentral.clientes.keySet()) {
-			toSendMessage = new Socket();
+			try {
+				toSendMessage = new Socket(ip, CLIENT_PORT);
+				writer = new PrintWriter(toSendMessage.getOutputStream());
+				writer.println(message);
+			} catch (Exception e) {
+				ServerCentral.clientes.remove(ip);
+			}
 		}
 	}
 
 	@Override
 	public void run() {
+		String ip = client.getInetAddress().getCanonicalHostName();
+		ServerCentral.clientes.put(ip, ip);
 		try {
-			this.readMessage();
+			this.resendMessageToAllClients();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("ERRO AO ENVIAR MENSAGEM PARA OS CLIENTES");
 		}
-		
-		
 	}
 }

@@ -7,18 +7,10 @@ import java.net.Socket;
 public class ClientCentral {
 	private static int PORT = 3000;
 
-	public static void client(String ip, String message) throws IOException {
-		Socket client = new Socket(ip, PORT);
-
-//		PrintWriter writer;
-//		Scanner scanner;
-//		writer = new PrintWriter(client.getOutputStream(), true);
-//		scanner = new Scanner(client.getInputStream());
-
+	public static void client(String ipServer, String message) throws IOException {
+		Socket client = new Socket(ipServer, PORT);
 		System.out.println("Cliente funcionando");
-//		while (true) {
-//		writer.println("AAAAAAAAAA");
-			// Response response = new Response(client);
+
 		sendMessage(client, message);
 	}
 	

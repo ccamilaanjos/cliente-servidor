@@ -6,14 +6,20 @@ import java.net.Socket;
 import java.util.Scanner;
 
 public class ServerClient {
-	public static void main(String[] args) throws IOException {
-		ServerSocket server = new ServerSocket(3001);
+	private static int PORT = 3001;
+
+	public static void messageReceiver() throws IOException {
+		ServerSocket server = new ServerSocket(PORT);
 		Socket client;
-		
-		while(true) {
+
+		while (true) {
 			client = server.accept();
 			Scanner serverMessage = new Scanner(client.getInputStream());
-			System.out.println(serverMessage.nextLine());;
+			addMessage(serverMessage);
 		}
+	}
+	
+	private static void addMessage(Scanner message) {
+		System.out.println(message.nextLine());
 	}
 }
