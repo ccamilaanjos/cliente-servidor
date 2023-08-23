@@ -10,15 +10,13 @@ public class ClientCentral {
 	public static void client(String ipServer, String message) throws IOException {
 		Socket client = new Socket(ipServer, PORT);
 		System.out.println("Cliente funcionando");
-
-		sendMessage(client, message);
+		if(!message.equalsIgnoreCase("")) {
+			sendMessage(client, message);
+		}
 	}
 	
 	public static void sendMessage(Socket client, String messageToServer) throws IOException {
-		PrintWriter writer;
-		writer = new PrintWriter(client.getOutputStream(), true);
-		
+		PrintWriter writer = new PrintWriter(client.getOutputStream(), true);
 		writer.println(messageToServer);
-		
 	}
 }

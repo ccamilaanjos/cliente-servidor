@@ -1,30 +1,40 @@
 package ui;
 
+import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import javax.swing.JScrollBar;
-import javax.swing.JTextArea;
-import java.awt.Color;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
-public class Janela {
+import clientside.ClientCentral;
+import serverclient.ServerClient;
+
+public class Janela{
 
 	private JFrame frame;
-	private JTextField txtNome;
-	private JTextField txtIP;
+	private static JTextField txtNome;
+	private static JTextField txtIP;
 	private JTextField txtMensagem;
+	private static Thread messageReceiverThread;
+	private static String nomeUsuario;
+	private static String ipServer;
+	public static JTextArea txtChat;
 
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		messageReceiverThread = new Thread(new ServerClient());
+		messageReceiverThread.start();
+		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -71,19 +81,11 @@ public class Janela {
 		frame.getContentPane().add(txtIP);
 		txtIP.setColumns(10);
 		
-		JButton btLogin = new JButton("Login");
-		btLogin.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		btLogin.setBounds(311, 55, 85, 21);
-		frame.getContentPane().add(btLogin);
-		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(52, 338, 332, 93);
 		frame.getContentPane().add(scrollPane);
 		
-		JTextPane txtChat = new JTextPane();
+		txtChat = new JTextArea();
 		txtChat.setText("Criado por:\r\nCamila\r\nLuan\r\nYuri");
 		txtChat.setBackground(new Color(255, 255, 255));
 		txtChat.setEditable(false);
@@ -101,6 +103,13 @@ public class Janela {
 		JButton btnEnviarMensagem = new JButton("Enviar mensagem");
 		btnEnviarMensagem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				String message = txtMensagem.getText();
+				try {
+					enviarMensagem(message);
+					txtMensagem.setText("");
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(btnEnviarMensagem, "ERRO AO ENVIAR A MENSAGEM");
+				}
 			}
 		});
 		btnEnviarMensagem.setBounds(148, 257, 146, 35);
@@ -109,5 +118,53 @@ public class Janela {
 		JLabel lbChat = new JLabel("Whatsapp");
 		lbChat.setBounds(52, 313, 73, 14);
 		frame.getContentPane().add(lbChat);
+		
+		JButton btLogin = new JButton("Login");
+		btLogin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String nomeUsuarioAntigo = nomeUsuario;
+				String ipServerAntigo = ipServer;
+				
+				nomeUsuario = txtNome.getText();
+				ipServer = txtIP.getText();
+				
+				try {
+					if(!estaLogado(nomeUsuarioAntigo, ipServerAntigo)) {
+						enviarNome();
+						limparCamposLogin();
+						JOptionPane.showMessageDialog(btLogin, "Login feito com sucesso");
+					}
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(btLogin, "Erro ao fazer Login");
+				}
+			}
+		});
+		btLogin.setBounds(311, 55, 85, 21);
+		frame.getContentPane().add(btLogin);
+	}
+	
+	private void enviarNome() throws IOException {
+		ClientCentral.client(ipServer, "");
+	}
+	
+	private boolean estaLogado(String nomeUsuarioAntigo, String ipServerAntigo) {
+		if(nomeUsuarioAntigo == null || ipServerAntigo == null) {
+			return false;
+		}
+		if(nomeUsuarioAntigo.equalsIgnoreCase(nomeUsuario) && ipServerAntigo.equalsIgnoreCase(ipServer)) {
+			return true;
+		}
+		return false;
+	}
+	
+	private void limparCamposLogin() {
+		txtChat.setText("");
+		txtNome.setText("");
+		txtIP.setText("");
+	}
+	
+	private void enviarMensagem(String mensagem) throws IOException {
+		String finalMessage = nomeUsuario + ": " + mensagem;
+		ClientCentral.client(ipServer, finalMessage);
 	}
 }

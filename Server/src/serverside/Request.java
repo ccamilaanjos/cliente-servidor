@@ -15,14 +15,8 @@ public class Request implements Runnable{
 	}
 	
 	private String getClientMessage() throws IOException {
-//		System.out.println("Read - Server");
-		
 		Scanner scanner = new Scanner(this.client.getInputStream());
-		String messageFromClient = "";
-		
-		while(scanner.hasNextLine()) {
-			messageFromClient += scanner.nextLine();
-		}
+		String messageFromClient = scanner.nextLine();
 		
 		return messageFromClient;
 	}
@@ -35,7 +29,7 @@ public class Request implements Runnable{
 		for (String ip : ServerCentral.clientes.keySet()) {
 			try {
 				toSendMessage = new Socket(ip, CLIENT_PORT);
-				writer = new PrintWriter(toSendMessage.getOutputStream());
+				writer = new PrintWriter(toSendMessage.getOutputStream(), true);
 				writer.println(message);
 			} catch (Exception e) {
 				ServerCentral.clientes.remove(ip);

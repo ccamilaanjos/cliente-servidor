@@ -5,7 +5,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class ServerClient {
+import ui.Janela;
+
+public class ServerClient implements Runnable{
 	private static int PORT = 3001;
 
 	public static void messageReceiver() throws IOException {
@@ -14,12 +16,22 @@ public class ServerClient {
 
 		while (true) {
 			client = server.accept();
-			Scanner serverMessage = new Scanner(client.getInputStream());
-			addMessage(serverMessage);
+			addMessage(client);
 		}
 	}
 	
-	private static void addMessage(Scanner message) {
-		System.out.println(message.nextLine());
+	private static void addMessage(Socket client) throws IOException {
+		Scanner serverMessage = new Scanner(client.getInputStream());
+		String message = serverMessage.nextLine();
+		Janela.txtChat.append(message + "\n");;
+	}
+
+	@Override
+	public void run() {
+		try {
+			messageReceiver();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

@@ -17,8 +17,8 @@ public class ServerCentral {
 		
 		while(true) {
 			Socket client = serverSocket.accept();
-			
 			Request request = new Request(client);
+			
 			thread = new Thread(request);
 			thread.start();
 		}
